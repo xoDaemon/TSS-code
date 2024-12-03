@@ -1,0 +1,33 @@
+MODULE main
+VAR
+    request : boolean;  -- Cererea
+    response : boolean; -- Răspunsul
+
+ASSIGN
+    init(request) := FALSE; --variables are initialized as false at the start of model
+    init(response) := FALSE;
+
+    next(request) := case
+        response : FALSE;  -- Reset request after response is given
+        TRUE : {TRUE, FALSE};  -- Nondeterministic choice
+    esac;
+
+    next(response) := case
+        request & !response : TRUE;  -- Response is given if there is a request
+        TRUE : FALSE;  -- Default case for response
+    esac;
+
+LTLSPEC
+    G (request -> F response);
+
+LTLSPEC
+    G (response -> F request);
+
+LTLSPEC
+    G (response -> X !response);
+
+CTLSPEC
+    AG (request -> AF response);
+
+CTLSPEC
+    AG (request -> AF (response | request));
