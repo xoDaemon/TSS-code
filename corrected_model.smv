@@ -8,8 +8,10 @@ ASSIGN
     init(response) := FALSE;
 
     next(request) := case
-        response : FALSE;  -- Reset request after response is given
-        TRUE : {TRUE, FALSE};  -- Nondeterministic choice
+        !request & !response: TRUE;
+        request & !response: TRUE;
+        request & response: FALSE;
+        !request & response: FALSE;
     esac;
 
     next(response) := case
@@ -31,3 +33,6 @@ CTLSPEC
 
 CTLSPEC
     AG (request -> AF (response | request));
+
+CTLSPEC
+    AG (request -> EX (response | request));
